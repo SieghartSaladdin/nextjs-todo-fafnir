@@ -7,10 +7,11 @@ export async function GET() {
       orderBy: { createdAt: "desc" },
     });
     return NextResponse.json(todos);
-  } catch (error: any) {
+  } catch (error: unknown) {
+    const message = error instanceof Error ? error.message : "Internal error";
     console.error("Error fetching todos:", error);
     return NextResponse.json(
-      { error: "Failed to fetch todos", details: error.message },
+      { error: "Failed to fetch todos", details: message },
       { status: 500 }
     );
   }
@@ -37,10 +38,11 @@ export async function POST(request: Request) {
     });
 
     return NextResponse.json(newTodo, { status: 201 });
-  } catch (error: any) {
+  } catch (error: unknown) {
+    const message = error instanceof Error ? error.message : "Internal error";
     console.error("Error creating todo:", error);
     return NextResponse.json(
-      { error: "Failed to create todo", details: error.message },
+      { error: "Failed to create todo", details: message },
       { status: 500 }
     );
   }

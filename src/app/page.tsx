@@ -14,7 +14,6 @@ import {
   Database,
   RefreshCw,
   Search,
-  Tag,
 } from "lucide-react";
 
 interface Todo {
@@ -49,9 +48,10 @@ export default function TodoPage() {
       if (!res.ok) throw new Error("Failed to load todos from database");
       const data = await res.json();
       setTodos(Array.isArray(data) ? data : []);
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error(err);
-      setErrorMsg(err.message || "Failed to connect to database");
+      const msg = err instanceof Error ? err.message : "Failed to connect to database";
+      setErrorMsg(msg);
     } finally {
       setLoading(false);
     }
@@ -84,8 +84,9 @@ export default function TodoPage() {
       setDescription("");
       setPriority("medium");
       setShowDescInput(false);
-    } catch (err: any) {
-      alert(err.message);
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : "Error creating todo";
+      alert(msg);
     } finally {
       setSubmitting(false);
     }
@@ -108,7 +109,7 @@ export default function TodoPage() {
         // Rollback
         fetchTodos();
       }
-    } catch (err) {
+    } catch {
       fetchTodos();
     }
   };
@@ -119,7 +120,7 @@ export default function TodoPage() {
       await fetch(`/api/todos/${id}`, {
         method: "DELETE",
       });
-    } catch (err) {
+    } catch {
       fetchTodos();
     }
   };
@@ -234,7 +235,7 @@ export default function TodoPage() {
               <div className="flex items-center gap-2">
                 <select
                   value={priority}
-                  onChange={(e) => setPriority(e.target.value as any)}
+                  onChange={(e) => setPriority(e.target.value as "low" | "medium" | "high")}
                   className="bg-slate-950 border border-slate-800 rounded-xl px-3 py-3 text-slate-300 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
                 >
                   <option value="low">🟢 Low</option>

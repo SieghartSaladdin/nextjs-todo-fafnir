@@ -10,7 +10,13 @@ export async function PATCH(
     const body = await request.json();
     const { title, description, completed, priority } = body;
 
-    const updateData: any = {};
+    const updateData: {
+      title?: string;
+      description?: string | null;
+      completed?: boolean;
+      priority?: string;
+    } = {};
+
     if (typeof title === "string") updateData.title = title.trim();
     if (description !== undefined) updateData.description = description ? description.trim() : null;
     if (typeof completed === "boolean") updateData.completed = completed;
@@ -22,10 +28,11 @@ export async function PATCH(
     });
 
     return NextResponse.json(updatedTodo);
-  } catch (error: any) {
+  } catch (error: unknown) {
+    const message = error instanceof Error ? error.message : "Internal error";
     console.error("Error updating todo:", error);
     return NextResponse.json(
-      { error: "Failed to update todo", details: error.message },
+      { error: "Failed to update todo", details: message },
       { status: 500 }
     );
   }
@@ -43,10 +50,11 @@ export async function DELETE(
     });
 
     return NextResponse.json({ success: true, message: "Todo deleted" });
-  } catch (error: any) {
+  } catch (error: unknown) {
+    const message = error instanceof Error ? error.message : "Internal error";
     console.error("Error deleting todo:", error);
     return NextResponse.json(
-      { error: "Failed to delete todo", details: error.message },
+      { error: "Failed to delete todo", details: message },
       { status: 500 }
     );
   }
